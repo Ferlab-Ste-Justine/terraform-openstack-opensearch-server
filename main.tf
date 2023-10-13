@@ -123,8 +123,8 @@ module "opensearch_configs" {
     server_cert = var.opensearch.tls.server.certificate
     server_key  = var.opensearch.tls.server.key
     ca_cert     = var.opensearch.tls.ca_certificate
-    admin_cert  = var.opensearch.bootstrap_security ? var.opensearch.tls.admin_client.certificate : ""
-    admin_key   = var.opensearch.bootstrap_security ? var.opensearch.tls.admin_client.key : ""
+    admin_cert  = var.opensearch.tls.admin_client.certificate
+    admin_key   = var.opensearch.tls.admin_client.key
   }
 }
 
