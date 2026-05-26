@@ -6,7 +6,7 @@ This terraform module is used to provision a server that is part of an opensearc
 
 It assumes that pki authentication will be used (both for node to node communication and for client to server authentication, with optional basic auth authentication supported on the client side) and that most settings not required to bootstrap the cluster (users, roles, tenants, etc) will be generated separately using the opensearch api.
 
-It also assumes that there will two types of nodes in your cluster: Dedicated managers and dedicated workers.
+It also assumes that there will two types of nodes in your cluster: Dedicated cluster managers and dedicated workers.
 
 This terraform module has been validated on recent ubuntu images. Your mileage may vary with other distributions.
 
@@ -64,13 +64,15 @@ This terraform module has been validated on recent ubuntu images. Your mileage m
     - **trusted_gpg_keys**: List of trusted gpp keys to verify the signature of the top commit. If an empty list is passed, the commit signature will not be verified.
     - **auth**: Authentication to the git server. It should have the following keys:
       - **client_ssh_key** Private client ssh key to authentication to the server.
+      - **client_ssh_user**: User to identify as with the git server. Can be left empty for many git providers, but some like Gitea require it.
       - **server_ssh_fingerprint**: Public ssh fingerprint of the server that will be used to authentify it.
 - **opensearch**: Opensearch configuration. It has the following keys:
   - **cluster_name**: Name of the opensearch cluster. Should be the same for all members of the cluster.
-  - **manager**: Whether the ndoe should be a dedicated manager node (otherwise it will be a dedicated worker node).
-  - **seed_hosts**: List of manager nodes that the nodes should synchronize to in order to join the cluster. Should be ips or domain names.
+  - **cluster_manager**: Whether the node should be a dedicated cluster-manager node (otherwise it will be a dedicated data/ingest node).
+  - **seed_hosts**: List of cluster manager nodes that the nodes should synchronize to in order to join the cluster. Should be ips or domain names.
   - **bootstrap_security**: Whether the node should bootstrap opensearch security. One and only one node should have this flag set to true when the opensearch cluster is initially created.
   - **initial_cluster**: Whether this node is created as part of the initial cluster that will form opensearch. Nodes that are added to the cluster afterwards should set this to false.
+  - **initial_cluster_manager_nodes**: Values that get written to `cluster.initial_cluster_manager_nodes`. Provide the same list (usually the cluster-manager hostnames you use in `node.name`) on every node; OpenSearch 2.x and 3.x both honor this setting when forming the initial cluster.
   - **tls**: Parameters to setup tls certificates for networking traffic between cluster members and with clients. It takes the following keys:
     - **ca_certificate**: Certificate of the CA used to sign all other certificates (both for the servers and clients)
     - **server**: Tls credentials for the opensearch nodes

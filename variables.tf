@@ -149,6 +149,7 @@ variable "fluentbit_dynamic_config" {
       trusted_gpg_keys = list(string)
       auth             = object({
         client_ssh_key         = string
+        client_ssh_user        = optional(string, "")
         server_ssh_fingerprint = string
       })
     })
@@ -174,6 +175,7 @@ variable "fluentbit_dynamic_config" {
       trusted_gpg_keys = []
       auth             = {
         client_ssh_key         = ""
+        client_ssh_user        = ""
         server_ssh_fingerprint = ""
       }
     }
@@ -188,12 +190,14 @@ variable "fluentbit_dynamic_config" {
 variable "opensearch" {
   description = "Opensearch configurations"
   type = object({
-    cluster_name          = string
-    manager               = bool
-    seed_hosts            = list(string)
-    bootstrap_security    = bool
-    initial_cluster       = bool
-    tls                   = object({
+    cluster_name                  = string
+    cluster_manager               = bool
+    seed_hosts                    = list(string)
+    bootstrap_security            = bool
+    initial_cluster               = bool
+    initial_cluster_manager_nodes = optional(list(string))
+
+    tls = object({
       ca_certificate = string
       server         = object({
         key         = string
